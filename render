@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: MiBotNode
+    runtime: node
+    node_version: 18
+    build_command: npm install
+    start_command: npm start
