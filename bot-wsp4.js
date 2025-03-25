@@ -156,7 +156,7 @@ const startBot = async () => {
             const { connection, lastDisconnect, qr } = update;
             if (qr) {
                 console.log('Escanea este código QR para conectar el bot:');
-                qrcode.generate(qr, { small: true });
+                qrcode.generate(qr);
             }
             if (connection === 'open') {
                 console.log('¡Bot conectado exitosamente!');
