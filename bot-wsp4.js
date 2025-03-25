@@ -2,6 +2,7 @@ const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysocket
 const qrcode = require('qrcode-terminal');
 const pino = require('pino');
 const Fuse = require('fuse.js');
+const crypto = require('crypto');
 
 // Banco de preguntas y respuestas
 const questionBank = [
