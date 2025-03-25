@@ -1,19 +1,18 @@
 {
-  "name": "mi-proyecto-baileys",
+  "name": "mi-proyecto-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bot-wsp4.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node bot-wsp4.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
     "@whiskeysockets/baileys": "^6.7.16",
     "fuse.js": "^7.1.0",
     "qrcode-terminal": "^0.12.0",
     "ws": "^8.18.1"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
