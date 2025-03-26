@@ -5,9 +5,11 @@ const pino = require('pino');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
 const fs = require('fs'); // Manejo de archivos
+const unzipper = require('unzipper'); // Para descomprimir archivos ZIP
 
 // Banco de preguntas y respuestas (sin cambios en esta sección)
-const questionBank = [  { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
+const questionBank = [
+    { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
     { question: "¿Qué puedes hacer?", answer: [{ text: "Puedo responder preguntas, ayudarte con tareas y mucho más." }] },
     { 
         question: "que nos dedicamos", 
@@ -104,7 +106,8 @@ Una vez dominemos el mercado de la sal, replicaremos este modelo con otros produ
             { image: "facturas.jpg" } // Cambia esta ruta por la ubicación de tu imagen local
         ]
         
-    } ];
+    }
+];
 
 // Configuración de similitud
 const fuse = new Fuse(questionBank, {
@@ -140,9 +143,24 @@ const processQueue = async (sock, recipient, messages) => {
     }
 };
 
+// Función para descomprimir el archivo auth_info.zip
+const unzipAuthInfo = async () => {
+    if (fs.existsSync('./auth_info.zip')) {
+        console.log('Descomprimiendo auth_info.zip...');
+        await fs.createReadStream('./auth_info.zip')
+            .pipe(unzipper.Extract({ path: './auth_info' }))
+            .on('close', () => console.log('Descompresión completada.'));
+    } else {
+        console.log('No se encontró el archivo auth_info.zip. Continuando...');
+    }
+};
+
 // Función principal
 const startBot = async () => {
     try {
+        // Descomprimir credenciales antes de iniciar el bot
+        await unzipAuthInfo();
+
         const { state, saveCreds } = await useMultiFileAuthState('./auth_info');
         const sock = makeWASocket({
             logger: pino({ level: 'debug' }),
@@ -154,36 +172,35 @@ const startBot = async () => {
         sock.ev.on('connection.update', (update) => {
             const { connection, lastDisconnect, qr } = update;
 
-           if (qr) {
-    console.log('Escanea este código QR para conectar el bot:');
+            if (qr) {
+                console.log('Escanea este código QR para conectar el bot:');
 
-    // Generar QR en formato terminal (cuadrado automáticamente)
-    QRCode.toString(qr, { type: 'terminal', errorCorrectionLevel: 'H' }, (err, qrCode) => {
-        if (err) {
-            console.error('Error al generar el código QR:', err);
-        } else {
-            console.log(qrCode);
-        }
-    });
+                // Generar QR en formato terminal (cuadrado automáticamente)
+                QRCode.toString(qr, { type: 'terminal', errorCorrectionLevel: 'H' }, (err, qrCode) => {
+                    if (err) {
+                        console.error('Error al generar el código QR:', err);
+                    } else {
+                        console.log(qrCode);
+                    }
+                });
 
-    // Generar QR en PNG con dimensiones ajustadas
-    QRCode.toFile('./qr.png', qr, {
-        width: 300, // Fuerza que sea cuadrado
-        height: 300,
-        margin: 1,
-        color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-        }
-    }, (err) => {
-        if (err) {
-            console.error('Error al guardar el código QR como imagen:', err);
-        } else {
-            console.log('Código QR guardado como archivo qr.png');
-        }
-    });
-}
-
+                // Generar QR en PNG con dimensiones ajustadas
+                QRCode.toFile('./qr.png', qr, {
+                    width: 300, // Fuerza que sea cuadrado
+                    height: 300,
+                    margin: 1,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                }, (err) => {
+                    if (err) {
+                        console.error('Error al guardar el código QR como imagen:', err);
+                    } else {
+                        console.log('Código QR guardado como archivo qr.png');
+                    }
+                });
+            }
 
             if (connection === 'open') {
                 console.log('¡Bot conectado exitosamente!');
