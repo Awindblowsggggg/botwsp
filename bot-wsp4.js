@@ -1,12 +1,12 @@
 const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode-terminal');
+const QRCode = require('qrcode'); // Importa la biblioteca para generar QR como imagen
 const pino = require('pino');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
 
-// Banco de preguntas y respuestas
-const questionBank = [
-    { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
+// Banco de preguntas y respuestas (sin cambios en esta sección)
+const questionBank = [ { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
     { question: "¿Qué puedes hacer?", answer: [{ text: "Puedo responder preguntas, ayudarte con tareas y mucho más." }] },
     { 
         question: "que nos dedicamos", 
@@ -103,8 +103,7 @@ Una vez dominemos el mercado de la sal, replicaremos este modelo con otros produ
             { image: "facturas.jpg" } // Cambia esta ruta por la ubicación de tu imagen local
         ]
         
-    }
-];
+    } ];
 
 // Continuar en el sistema Global-Match FLESH**
 // Configuración de similitud
@@ -154,10 +153,23 @@ const startBot = async () => {
 
         sock.ev.on('connection.update', (update) => {
             const { connection, lastDisconnect, qr } = update;
+
             if (qr) {
                 console.log('Escanea este código QR para conectar el bot:');
+
+                // Mostrar en consola como QR
                 qrcode.generate(qr);
+
+                // Generar archivo QR como imagen PNG
+                QRCode.toFile('./qr.png', qr, (err) => {
+                    if (err) {
+                        console.error('Error al guardar el código QR como imagen:', err);
+                    } else {
+                        console.log('Código QR guardado como archivo qr.png');
+                    }
+                });
             }
+
             if (connection === 'open') {
                 console.log('¡Bot conectado exitosamente!');
             } else if (connection === 'close') {
@@ -203,3 +215,12 @@ const startBot = async () => {
 };
 
 startBot();
+
+
+
+
+
+
+    
+            
+  
