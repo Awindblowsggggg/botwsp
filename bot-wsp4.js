@@ -154,35 +154,36 @@ const startBot = async () => {
         sock.ev.on('connection.update', (update) => {
             const { connection, lastDisconnect, qr } = update;
 
-            if (qr) {
-                console.log('Escanea este código QR para conectar el bot:');
-                
-                // Generar el QR en formato cuadrado para consola
-                QRCode.toString(qr, { type: 'terminal', errorCorrectionLevel: 'H' }, (err, qrCode) => {
-                    if (err) {
-                        console.error('Error al generar el código QR:', err);
-                    } else {
-                        console.log(qrCode); // Esto imprime el QR en formato cuadrado en la consola
-                    }
-                });
+           if (qr) {
+    console.log('Escanea este código QR para conectar el bot:');
 
-                // Generar el QR como archivo PNG con dimensiones cuadradas
-                QRCode.toFile('./qr.png', qr, {
-                    width: 300, // Ancho cuadrado
-                    height: 300, // Altura cuadrada
-                    margin: 1, // Ajustar el margen para mantener proporcionalidad
-                    color: {
-                        dark: '#000000', // Color del QR (negro)
-                        light: '#FFFFFF', // Fondo del QR (blanco)
-                    },
-                }, (err) => {
-                    if (err) {
-                        console.error('Error al guardar el código QR como imagen:', err);
-                    } else {
-                        console.log('Código QR guardado como archivo qr.png');
-                    }
-                });
-            }
+    // Generar QR en formato terminal (cuadrado automáticamente)
+    QRCode.toString(qr, { type: 'terminal', errorCorrectionLevel: 'H' }, (err, qrCode) => {
+        if (err) {
+            console.error('Error al generar el código QR:', err);
+        } else {
+            console.log(qrCode);
+        }
+    });
+
+    // Generar QR en PNG con dimensiones ajustadas
+    QRCode.toFile('./qr.png', qr, {
+        width: 300, // Fuerza que sea cuadrado
+        height: 300,
+        margin: 1,
+        color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+        }
+    }, (err) => {
+        if (err) {
+            console.error('Error al guardar el código QR como imagen:', err);
+        } else {
+            console.log('Código QR guardado como archivo qr.png');
+        }
+    });
+}
+
 
             if (connection === 'open') {
                 console.log('¡Bot conectado exitosamente!');
