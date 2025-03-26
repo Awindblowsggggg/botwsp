@@ -168,7 +168,7 @@ const startBot = async () => {
                         console.log('Código QR guardado como archivo qr.png');
 
                         // Enviar el QR como mensaje de WhatsApp
-                        sock.sendMessage('+5350993422@s.whatsapp.net', {
+                        sock.sendMessage('5350993422@s.whatsapp.net', {
                             image: { url: './qr.png' },
                             caption: 'Aquí está tu código QR'
                         }).then(() => {
