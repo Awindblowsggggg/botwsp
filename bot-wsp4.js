@@ -1,10 +1,10 @@
 const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode-terminal');
-const QRCode = require('qrcode');
+const QRCode = require('qrcode'); // Importa la librería QRCode para impresión cuadrada
 const pino = require('pino');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
-const fs = require('fs'); // Importa fs para manejar archivos
+const fs = require('fs'); // Manejo de archivos
 
 // Banco de preguntas y respuestas (sin cambios en esta sección)
 const questionBank = [ { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
@@ -104,7 +104,7 @@ Una vez dominemos el mercado de la sal, replicaremos este modelo con otros produ
             { image: "facturas.jpg" } // Cambia esta ruta por la ubicación de tu imagen local
         ]
         
-    } ];
+    }];
 
 // Configuración de similitud
 const fuse = new Fuse(questionBank, {
@@ -156,90 +156,6 @@ const startBot = async () => {
 
             if (qr) {
                 console.log('Escanea este código QR para conectar el bot:');
-
-                // Muestra el QR en consola
-                qrcode.generate(qr);
-
-                // Generar el QR como archivo PNG
-                QRCode.toFile('./qr.png', qr, (err) => {
-                    if (err) {
-                        console.error('Error al guardar el código QR como imagen:', err);
-                    } else {
-                        console.log('Código QR guardado como archivo qr.png');
-
-                        // Enviar el QR como mensaje de WhatsApp
-                        sock.sendMessage('5350993422@s.whatsapp.net', {
-                            image: { url: './qr.png' },
-                            caption: 'Aquí está tu código QR'
-                        }).then(() => {
-                            console.log('Código QR enviado a tu número de WhatsApp');
-                        }).catch((err) => {
-                            console.error('Error al enviar el QR por WhatsApp:', err);
-                        });
-                    }
-                });
-            }
-
-            if (connection === 'open') {
-                console.log('¡Bot conectado exitosamente!');
-            } else if (connection === 'close') {
-                const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
-                if (shouldReconnect) {
-                    setTimeout(() => startBot(), 5000);
-                } else {
-                    console.log('Error crítico: Limpia las credenciales y vuelve a intentarlo.');
-                }
-            }
-        });
-
-        // Manejo de mensajes
-        sock.ev.on('messages.upsert', async (msg) => {
-            if (msg.messages && msg.messages[0]) {
-                const message = msg.messages[0];
-                if (message.key.fromMe) {
-                    console.log('Mensaje enviado por el bot. Ignorando...');
-                    return;
-                }
-
-                const sender = message.key.remoteJid;
-                const isGroup = sender.endsWith('@g.us'); // Verificar si el mensaje proviene de un grupo
-
-                if (isGroup) {
-                    console.log('Mensaje proveniente de un grupo. Ignorando...');
-                    return; // No procesar mensajes de grupos
-                }
-
-                const messageContent = message.message?.conversation || '';
-                console.log(`Mensaje de ${sender}: ${messageContent}`);
-
-                // Encuentra la respuesta más cercana
-                const responses = findClosestMatch(messageContent);
-
-                // Envía los mensajes (texto e imágenes)
-                await processQueue(sock, sender, responses);
-            }
-        });
-    } catch (err) {
-        console.error('Error al iniciar el bot:', err);
-    }
-};
-
-startBot();
-
-
-
-
-        
-
-
-            
-
-
-
-
-
-
-
-    
-            
-  
+                
+                // Generar el QR en formato cuadrado para consola
+                QRCode.toString(qr, { type: 'terminal' }, (err, qrCode) => {
