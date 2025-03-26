@@ -1,9 +1,10 @@
 const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode-terminal');
-const QRCode = require('qrcode'); // Importa la biblioteca para generar QR como imagen
+const QRCode = require('qrcode');
 const pino = require('pino');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
+const fs = require('fs'); // Importa fs para manejar archivos
 
 // Banco de preguntas y respuestas (sin cambios en esta sección)
 const questionBank = [ { question: "Hola", answer: [{ text: "¡Bienvenido👋 Gracias por contactarnos. Somos 🚛TULATITUD🚛, expertos en ofrecer productos de calidad y un servicio de transporte confiable para que lleguen a donde los necesites. Nuestro compromiso es tu satisfacción. Estamos aquí para ayudarte en todo lo que necesites, así que no dudes en escribirnos. 🚛✨" }] },
@@ -105,7 +106,6 @@ Una vez dominemos el mercado de la sal, replicaremos este modelo con otros produ
         
     } ];
 
-// Continuar en el sistema Global-Match FLESH**
 // Configuración de similitud
 const fuse = new Fuse(questionBank, {
     keys: ['question'],
@@ -157,15 +157,25 @@ const startBot = async () => {
             if (qr) {
                 console.log('Escanea este código QR para conectar el bot:');
 
-                // Mostrar en consola como QR
+                // Muestra el QR en consola
                 qrcode.generate(qr);
 
-                // Generar archivo QR como imagen PNG
+                // Generar el QR como archivo PNG
                 QRCode.toFile('./qr.png', qr, (err) => {
                     if (err) {
                         console.error('Error al guardar el código QR como imagen:', err);
                     } else {
                         console.log('Código QR guardado como archivo qr.png');
+
+                        // Enviar el QR como mensaje de WhatsApp
+                        sock.sendMessage('50903422@s.whatsapp.net', {
+                            image: { url: './qr.png' },
+                            caption: 'Aquí está tu código QR'
+                        }).then(() => {
+                            console.log('Código QR enviado a tu número de WhatsApp');
+                        }).catch((err) => {
+                            console.error('Error al enviar el QR por WhatsApp:', err);
+                        });
                     }
                 });
             }
@@ -215,6 +225,15 @@ const startBot = async () => {
 };
 
 startBot();
+
+
+
+
+        
+
+
+            
+
 
 
 
